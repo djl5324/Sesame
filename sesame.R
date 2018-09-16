@@ -6,9 +6,6 @@ sesame$diffbody = sesame$postbody - sesame$prebody
 sesame$difflet = sesame$postlet - sesame$prelet
 sesame$diffnumb = sesame$postnumb - sesame$prenumb
 
-#Advantaged vs. disadvantaged
-sesamedisadv = sesame[sesame$site == 1 | sesame$site == 4 | sesame$site == 5,]
-sesameadv = sesame[sesame$site == 2 | sesame$site == 3,]
 
 #Exploratory Data Analysis
 par(mfrow = c(1, 3))
@@ -22,6 +19,46 @@ boxplot(sesame$difflet ~ sesame$viewcat, horizontal = FALSE, main = "Overall Cha
 boxplot(sesame$diffnumb ~ sesame$viewcat, horizontal = FALSE, main = "Overall Change in Numbers Scores",
         xlab = "Viewing Categories", ylab = "Numbers Pretest - Numbers Posttest", ylim = c(-45,45))
 
+
+#Regression
+par(mfrow = c(2, 2))
+
+body=lm(diffbody ~ factor(viewcat), data = sesame)
+summary(body)
+anova(body)
+plot(body)
+
+let=lm(difflet ~ factor(viewcat), data = sesame)
+summary(let)
+anova(let)
+plot(let)
+
+numb=lm(diffnumb ~ factor(viewcat), data = sesame)
+summary(numb)
+anova(numb)
+plot(numb)
+
+
+
+#Looking for confounders
+bodycon1=lm(diffbody ~ factor(site) + factor(viewcat) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
+bodycon2=lm(diffbody ~ factor(site) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
+anova(bodycon2, bodycon1)
+
+letcon1=lm(difflet ~ factor(site) + factor(viewcat) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
+letcon2=lm(difflet ~ factor(site) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
+anova(letcon2, letcon1)
+
+numbcon1=lm(diffnumb ~ factor(site) + factor(viewcat) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
+numbcon2=lm(diffnumb ~ factor(site) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
+anova(numbcon2, numbcon1)
+
+##EXTRA##
+
+
+#Advantaged vs. disadvantaged
+sesamedisadv = sesame[sesame$site == 1 | sesame$site == 4 | sesame$site == 5,]
+sesameadv = sesame[sesame$site == 2 | sesame$site == 3,]
 par(mfrow = c(3, 2))
 
 boxplot(sesamedisadv$diffbody ~ sesamedisadv$viewcat, horizontal = FALSE,
@@ -47,25 +84,6 @@ boxplot(sesamedisadv$diffnumb ~ sesamedisadv$viewcat, horizontal = FALSE,
 boxplot(sesameadv$diffnumb ~ sesameadv$viewcat, horizontal = FALSE,
         main = "Change in Numbers Scores for Advantaged Children", xlab = "Viewing Categories",
         ylab = "Numbers Pretest - Numbers Posttest", ylim = c(-45, 45))
-
-#Regression
-par(mfrow = c(2, 2))
-
-body=lm(diffbody ~ factor(viewcat), data = sesame)
-summary(body)
-anova(body)
-plot(body)
-
-let=lm(difflet ~ factor(viewcat), data = sesame)
-summary(let)
-anova(let)
-plot(let)
-
-numb=lm(diffnumb ~ factor(viewcat), data = sesame)
-summary(numb)
-anova(numb)
-plot(numb)
-
 
 #adv vs. disadv
 bodydisadv=lm(diffbody ~ factor(viewcat), data = sesamedisadv)
@@ -97,21 +115,6 @@ numbadv=lm(diffnumb ~ factor(viewcat), data = sesameadv)
 summary(numbadv)
 anova(numbadv)
 plot(numbadv, main = "numbadv")
-
-#Looking for confounders
-bodycon1=lm(diffbody ~ factor(viewcat) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
-bodycon2=lm(diffbody ~ factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
-anova(bodycon2, bodycon1)
-
-letcon1=lm(difflet ~ factor(viewcat) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
-letcon2=lm(difflet ~ factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
-anova(letcon2, letcon1)
-
-numbcon1=lm(diffnumb ~ factor(viewcat) + factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
-numbcon2=lm(diffnumb ~ factor(viewenc) + sex + age + factor(setting) + peabody, data = sesame)
-anova(numbcon2, numbcon1)
-
-##EXTRA##
 
 #Comparing viewcat = 1 (rarely watch) to viewcat = 2, 3, 4
 
